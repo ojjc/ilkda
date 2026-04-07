@@ -1,0 +1,276 @@
+.grid {
+  display: grid;
+  gap: 12px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  animation: rowIn 0.2s ease both;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.card:hover {
+  border-color: var(--muted);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.coverPlaceholder {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  opacity: 0.3;
+}
+
+.typeBadge {
+  position: absolute;
+  top: calc(7px + (var(--card-size) - 120) * 0.05px);
+  left: calc(7px + (var(--card-size) - 120) * 0.05px);
+  font-size: calc(9px + (var(--card-size) - 120) * 0.05px);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  /* background: var(--surface2); */
+  background: rgba(30, 30, 30, 0.75);
+  /* backdrop-filter: blur(4px); */
+}
+
+.body {
+  padding: 10px 10px 0 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cardTitle {
+  font-size: calc(10px + (var(--card-size) - 120) * 0.05px);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  height: 2.6em;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  padding: 0 10px 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: calc(9px + (var(--card-size) - 120) * 0.05px);
+  color: var(--muted);
+}
+
+.statusDot { 
+  width: calc(5px + (var(--card-size) - 120) * 0.05px); 
+  height: calc(5px + (var(--card-size) - 120) * 0.05px); 
+  border-radius: 50%; 
+  flex-shrink: 0; 
+}
+
+.score {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 300;
+  /* font-style: italic; */
+  font-size: calc(10px + (var(--card-size) - 120) * 0.05px);
+  color: var(--accent);
+}
+/* .scoreMax { font-size: 10px; color: var(--muted); } */
+.scoreDash { 
+  font-size: calc(10px + (var(--card-size) - 120) * 0.05px);
+  color: var(--muted); 
+}
+
+.progress { 
+  font-size: calc(9px + (var(--card-size) - 120) * 0.05px);
+  color: var(--muted); 
+}
+
+.trackBarWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+.trackBar {
+  flex: 1;
+  height: calc(2px + (var(--card-size) - 120) * 0.035px);
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.trackBarFill {
+  height: 100%;
+  background: var(--note);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.trackLabel {
+  font-size: calc(8px + (var(--card-size) - 120) * 0.05px);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.yearBadge {
+  font-size: calc(9px + (var(--card-size) - 120) * 0.05px);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cardPinned {
+  border-color: rgba(200, 169, 126, 0.4);
+  box-shadow: 0 0 0 1.5px rgba(200, 169, 126, 0.2);
+}
+
+.cardPinned:hover {
+  border-color: rgba(200, 169, 126,0.5)
+}
+
+.pinnedBadge {
+  position: absolute;
+  top: calc(30px + (var(--card-size) - 120) * 0.1375px);
+  left: calc(7px + (var(--card-size) - 120) * 0.05px);
+  font-size: calc(10px + (var(--card-size) - 120) * 0.05px);
+  color: var(--pinned);
+  background: rgba(0,0,0,0.55);
+  border-radius: 3px;
+  padding: 1px 5px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.overlayBtns {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.12s;
+  z-index: 10;
+}
+.card:hover .overlayBtns { opacity: 1; }
+
+.overlayBtn, .overlayBtnPin, .overlayBtnNote {
+  width: calc(24px + (var(--card-size) - 120) * 0.05px);
+  height: calc(24px + (var(--card-size) - 120) * 0.05px);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: calc(11px + (var(--card-size) - 120) * 0.05px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.12s;
+  backdrop-filter: blur(4px);
+}
+
+.overlayBtnPin:hover { color: var(--pinned); border-color: var(--pinned); background: rgba(255, 206, 27,0.2); }
+.overlayBtnNote:hover { color: var(--note); border-color: var(--note); background: rgba(137, 207, 240,0.2); }
+.overlayBtnPinned { color: var(--pinned); border-color: var(--pinned); background: rgba(200,169,126,0.2); }
+.overlayBtnPinned:hover { color: var(--pinned); border-color: var(--pinned); background: rgba(255,222,33,0.2); }
+.overlayBtnDelete:hover { color: var(--danger); border-color: var(--danger); background: rgba(200,80,80,0.3); }
+.overlayBtnDisabled { opacity: 0.3; cursor: not-allowed; }
+.overlayBtnNotes { font-size: 14px; }
+.overlayBtnNotesActive {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(200,169,126,0.15);
+}
+
+.notesBubble {
+  z-index: 9999;
+  background: rgba(30, 30, 30, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset;
+  backdrop-filter: blur(2px);
+  animation: bubbleIn 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  pointer-events: auto;
+}
+
+.notesBubbleLeft { transform-origin: top right; }
+.notesBubbleRight { transform-origin: top left; }
+
+/* tail pointing RIGHT for left-opening bubble */
+.notesBubbleLeft .notesBubbleTail {
+  position: absolute;
+  top: 10px;
+  right: -6px;
+  width: 10px;
+  height: 10px;
+  background: rgba(30, 30, 30, 0.85);
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  transform: rotate(45deg);
+  border-radius: 0 2px 0 0;
+}
+
+/* tail pointing LEFT for right-opening bubble */
+.notesBubbleRight .notesBubbleTail {
+  position: absolute;
+  top: 10px;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  background: rgba(30, 30, 30, 0.85);
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  transform: rotate(45deg);
+  border-radius: 0 0 0 2px;
+}
+
+.notesBubbleText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg, #e0ddd8);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 160px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.notesBubbleText::-webkit-scrollbar { display: none; }
+
+@keyframes bubbleIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

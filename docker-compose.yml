@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ilkda_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ilkda
+      POSTGRES_USER:     ilkda_user
+      POSTGRES_PASSWORD: ilkda_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ilkda_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ilkda_user -d ilkda"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ilkda_pgdata:

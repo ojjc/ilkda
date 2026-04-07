@@ -1,0 +1,56 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+/* each star is a button that holds two overlapping stars */
+.star {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* dimmed base star - always visible */
+.starBase {
+  font-size: 22px;
+  color: var(--border);
+  line-height: 1;
+  transition: color 0.08s;
+  pointer-events: none;
+}
+
+/* colored fill star - positioned on top of base, clipped for half-star */
+.starFill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--accent);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.label {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  color: var(--accent);
+  min-width: 28px;
+  line-height: 1;
+}

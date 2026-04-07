@@ -1,0 +1,238 @@
+import { useState, useEffect, useCallback } from 'react'
+import { EntryListView } from './EntryListView'
+import { EntryGridView } from './EntryGridView'
+import { EntryModal } from './EntryModal'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { PAGE_TITLES, STATUS_FILTER_OPTIONS } from '@/lib/constants'
+import styles from './TrackerPage.module.css'
+
+const CARD_SIZE_KEY = 'ilkda-card-size'
+const CARD_MIN = 120
+const CARD_MAX = 300
+const CARD_DEFAULT = 160
+const PIN_LIMIT = 5
+
+export function TrackerPage({
+  activeView, entries, loading, load, debouncedLoad, create, update, remove, togglePin, onLightbox, onToast,
+}) {
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [displayMode, setDisplayMode]  = useState(
+    () => localStorage.getItem('ilkda-dm') ?? 'list',
+  )
+  const [cardSize, setCardSize] = useState(
+    () => Number(localStorage.getItem(CARD_SIZE_KEY)) || CARD_DEFAULT,
+  )
+  const [modalEntry, setModalEntry] = useState(undefined)
+  const [pendingDeleteId, setPendingDeleteId] = useState(null)
+
+  useEffect(() => {
+    load({ type: activeView, status: statusFilter })
+  }, [activeView, statusFilter, load])
+
+  const handleSearch = useCallback((q) => {
+    setSearchQuery(q)
+    debouncedLoad({ type: activeView, status: statusFilter, query: q })
+  }, [activeView, statusFilter, debouncedLoad])
+
+  const handleDisplayMode = (mode) => {
+    setDisplayMode(mode)
+    localStorage.setItem('ilkda-dm', mode)
+  }
+
+  const handleCardSize = (val) => {
+    setCardSize(val)
+    localStorage.setItem(CARD_SIZE_KEY, val)
+  }
+
+  const handleSave = async (draft) => {
+    try {
+      if (modalEntry) {
+        await update(modalEntry.id, draft)
+        onToast('Entry updated')
+      } else {
+        await create(draft)
+        onToast('Entry added')
+      }
+      setModalEntry(undefined)
+    } catch (err) {
+      onToast(err.message || 'Failed to save entry', true)
+    }
+  }
+
+  const requestDelete = (id) => setPendingDeleteId(id)
+
+  const confirmDelete = async () => {
+    const id = pendingDeleteId
+    setPendingDeleteId(null)
+    try {
+      await remove(id)
+      onToast('Entry removed')
+    } catch (err) {
+      onToast(err.message || 'Failed to delete entry', true)
+    }
+  }
+
+  const handlePin = async (id) => {
+    try {
+      const updated = await togglePin(id)
+      onToast(updated.pinned ? 'Entry pinned' : 'Entry unpinned')
+    } catch (err) {
+      onToast(err.message || 'Failed to update pin', true)
+    }
+  }
+
+  // pin filter on the client-side
+  const pinnedCount  = entries.filter((e) => e.pinned).length
+  const filteredEntries = statusFilter === 'pinned' ? entries.filter((e) => e.pinned) : entries
+  // pinned entries are always added to the top and are reflected immediately without waiting for a server refetch.
+  const displayEntries = [...filteredEntries].sort((a, b) => {
+    if (a.pinned === b.pinned) return 0
+    return a.pinned ? -1 : 1
+  })
+
+  const pendingEntry = pendingDeleteId ? entries.find((e) => e.id === pendingDeleteId) : null
+
+  // all filter tabs - status options + pinned tab
+  const allFilterTabs = [
+    ...STATUS_FILTER_OPTIONS,
+    { value: 'pinned', label: `★ Pinned${pinnedCount ? ` (${pinnedCount})` : ''}` },
+  ]
+
+  return (
+    <div className={styles.page}>
+      {/* top bar */}
+      <div className={styles.topbar}>
+        <h1 className={styles.pageTitle}>{PAGE_TITLES[activeView] ?? activeView}</h1>
+
+        <div className={styles.searchBar}>
+          <span className={styles.searchIcon}>⌕</span>
+          <input
+            type="text" className={styles.searchInput} placeholder="search…"
+            value={searchQuery} onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.filterTabs}>
+          {allFilterTabs.map(({ value, label }) => (
+            <button
+              key={value}
+              className={`${styles.filterTab} ${statusFilter === value ? styles.filterTabActive : ''} ${value === 'pinned' ? styles.filterTabPinned : ''}`}
+              onClick={() => setStatusFilter(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <button className={styles.addBtn} onClick={() => setModalEntry(null)}>
+          + Add Entry
+        </button>
+
+        {displayMode === 'grid' && (
+          <div className={styles.sizeSliderWrap} title="Card size">
+            <svg className={styles.sizeIcon} width="11" height="11" viewBox="0 0 11 11" fill="none">
+              <rect x="0" y="0" width="4" height="4" rx="0.8" fill="currentColor" opacity="0.5"/>
+              <rect x="5.5" y="0" width="5.5" height="5.5" rx="0.8" fill="currentColor"/>
+            </svg>
+            <input
+              type="range" className={styles.sizeSlider}
+              min={CARD_MIN} max={CARD_MAX} value={cardSize}
+              onChange={(e) => handleCardSize(Number(e.target.value))}
+            />
+          </div>
+        )}
+
+        <div className={styles.viewToggle}>
+          <button
+            className={`${styles.viewBtn} ${displayMode === 'list' ? styles.viewBtnActive : ''}`}
+            onClick={() => handleDisplayMode('list')} title="List view"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="0" y="1"  width="14" height="2" rx="1" fill="currentColor" />
+              <rect x="0" y="6"  width="14" height="2" rx="1" fill="currentColor" />
+              <rect x="0" y="11" width="14" height="2" rx="1" fill="currentColor" />
+            </svg>
+          </button>
+          <button
+            className={`${styles.viewBtn} ${displayMode === 'grid' ? styles.viewBtnActive : ''}`}
+            onClick={() => handleDisplayMode('grid')} title="Grid view"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="0" y="0" width="6" height="6" rx="1.5" fill="currentColor" />
+              <rect x="8" y="0" width="6" height="6" rx="1.5" fill="currentColor" />
+              <rect x="0" y="8" width="6" height="6" rx="1.5" fill="currentColor" />
+              <rect x="8" y="8" width="6" height="6" rx="1.5" fill="currentColor" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* content */}
+      <div className={styles.contentWrap}>
+
+        <div className={styles.content}>
+          {loading && (
+            <div className={styles.loading}><div className={styles.spinner} />Loading…</div>
+          )}
+
+          {!loading && displayEntries.length === 0 && (
+            <div className={styles.empty}>
+              <span className={styles.emptyIcon}>{statusFilter === 'pinned' ? '★' : '◌'}</span>
+              <span className={styles.emptyTitle}>
+                {statusFilter === 'pinned' ? 'No pinned entries' : 'Nothing here yet'}
+              </span>
+              <span className={styles.emptySub}>
+                {statusFilter === 'pinned' ? `Pin up to ${PIN_LIMIT} entries using the ★ button` : 'Add your first entry to get started'}
+              </span>
+            </div>
+          )}
+
+          {!loading && displayEntries.length > 0 && displayMode === 'list' && (
+            <EntryListView
+              entries={displayEntries}
+              onEdit={setModalEntry}
+              onDelete={requestDelete}
+              onPin={handlePin}
+              pinnedCount={pinnedCount}
+              pinLimit={PIN_LIMIT}
+              onLightbox={onLightbox}
+            />
+          )}
+
+          {!loading && displayEntries.length > 0 && displayMode === 'grid' && (
+            <EntryGridView
+              entries={displayEntries}
+              onEdit={setModalEntry}
+              onDelete={requestDelete}
+              onPin={handlePin}
+              pinnedCount={pinnedCount}
+              pinLimit={PIN_LIMIT}
+              cardSize={cardSize}
+            />
+          )}          
+        </div>
+
+      </div>
+
+      {modalEntry !== undefined && (
+        <EntryModal
+          entry={modalEntry}
+          onSave={handleSave}
+          onClose={() => setModalEntry(undefined)}
+          onLightbox={onLightbox}
+        />
+      )}
+
+      {pendingDeleteId && (
+        <ConfirmDialog
+          message={
+            pendingEntry ? `Delete "${pendingEntry.title}"? This can't be undone.` : "Delete this entry? This can't be undone."
+          }
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
+    </div>
+  )
+}

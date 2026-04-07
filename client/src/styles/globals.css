@@ -1,0 +1,79 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:       #000000;
+  --surface:  #161616;
+  --surface2: #1e1e1e;
+  --border:   #2a2a2a;
+  --text:     #e8e4df;
+  --text2:     #9c9a97;
+  --muted:    #5a5550;
+  --muted2:    rgb(49, 49, 49);
+  --pinned:   #ffce1b; 
+  --star:     #ffca1c;
+  /* MUSTAAAAAAAAAAAAAAARD yellow */
+  --note:     #89CFF0;
+  --accent:   #c8a97e;
+  /* --accent:   #c78bff; */
+  --accent2:  #7e9fc8;
+  --accent3:  #84c87e;
+  /* --danger:   #ff4949; */
+  --danger:   #F32013;
+  --success:  #7ec89a;
+  --anime:   #e8a87c;
+  --tv:      #7ca8e8;
+  --manga:   #e87ca8;
+  --game:    #a87ce8;
+  --album:   #7ce8c8;
+  --book:    #e8d47c;
+  --movie:   #c8e87c;
+  /* --podcast: #e87c7c; */
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow: hidden;
+}
+
+button {
+  font-family: 'Quicksand', sans-serif;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: 'Quicksand', sans-serif;
+}
+
+/* shared animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* scrollbar */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }

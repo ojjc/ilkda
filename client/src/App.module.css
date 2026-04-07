@@ -1,0 +1,31 @@
+.app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* initial loading splash screen */
+.splash {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.splashSpinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--note);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}

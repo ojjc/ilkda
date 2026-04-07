@@ -1,0 +1,221 @@
+.sidebar {
+  width: 200px;
+  min-width: 200px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* user widget */
+.userWidget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+  flex-shrink: 0;
+}
+.userWidget:hover { background: var(--surface2); }
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.avatarEmoji { font-size: 16px; }
+
+.userInfo {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+.userName {
+  display: block;
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.userHandle { display: block; font-size: 11px; color: var(--muted); }
+
+/* nav */
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.navLabel {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 20px;
+  margin-bottom: 4px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 20px;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+.navItem:hover { color: var(--text); background: var(--surface2); }
+.navItemActive {
+  color: var(--text);
+  border-left-color: var(--muted);
+  background: var(--surface2);
+}
+
+.navDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.navLabel2 { flex: 1; }
+
+.navCount {
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--surface2);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+.navItemActive .navCount { background: var(--border); }
+
+/* stats at the bottom */
+.bottom {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.statsHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.statsLabel {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.statsScope {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.statsGrid {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  gap: 8px;
+  padding: 8px;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.statsGrid:hover{
+  border-color: var(--muted);
+  background: var(--surface2);
+  color: var(--muted);
+}
+
+.statsGrid:hover .statCell, .statsGrid:hover .statNum, .statsGrid:hover .statLabel {
+  border-color: var(--muted);
+  /* background: rgba(90, 85, 80, 0.06); */
+  color: var(--text);
+}
+
+.statCell {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  transition: border-color 0.12s, background 0.12s;
+}
+/* .statCell:hover {
+  border-color: var(--accent);
+  background: rgba(200, 169, 126, 0.06);
+} */
+
+.statsHint {
+  font-size: 8px;
+  color: var(--muted);
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+}
+
+.statNum {
+  display: block;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 300;
+  font-size: 20px;
+  color: var(--muted);
+  line-height: 1;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.statLabel {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.signOutBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 11px;
+  transition: all 0.12s;
+}
+.signOutBtn:hover { color: var(--danger); border-color: var(--danger); }

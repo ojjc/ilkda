@@ -1,0 +1,64 @@
+.screen {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+  z-index: 500;
+}
+
+.screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.3;
+}
+
+.screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, var(--bg) 100%);
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 40px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+  animation: slideUp 0.25s ease;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logoWord {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 300;
+  font-size: 48px;
+  letter-spacing: -2px;
+  color: var(--text);
+  display: block;
+  line-height: 1;
+}
+
+.logoSub {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  display: block;
+}
