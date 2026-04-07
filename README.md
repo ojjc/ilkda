@@ -1,6 +1,7 @@
 # ilkda 익다 — Personal Media Tracker (React + Express + PostgreSQL)
 
-personal media tracker. React + Vite frontend, Express backend, PostgreSQL database.
+a personal media tracker. 
+React + Vite frontend, Express backend, PostgreSQL database.
 
 <img width="2559" height="1405" alt="image" src="preview\image.png" />
 
