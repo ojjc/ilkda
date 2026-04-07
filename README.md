@@ -37,7 +37,7 @@ npm run build   # builds client into ilkda/public/
 npm start       # express serves the built frontend + API on :3000
 ```
 
-generate a strong JWT secret:
+generate a strong JWT secret key:
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
