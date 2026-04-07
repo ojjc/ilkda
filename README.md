@@ -2,6 +2,8 @@
 
 personal media tracker. React + Vite frontend, Express backend, PostgreSQL database.
 
+![Preview](preview\image.png)
+
 ---
 
 ## Requirements
