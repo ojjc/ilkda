@@ -12,6 +12,45 @@ const CARD_MAX = 300
 const CARD_DEFAULT = 160
 const PIN_LIMIT = 5
 
+const SORT_OPTIONS = [
+  { value: 'updated', label: 'Updated'}, 
+  { value: 'added', label: 'Added'}, 
+  { value: 'completed', label: 'Completed'}, 
+  { value: 'title_az', label: 'Title A-Z'}, 
+  { value: 'title_za', label: 'Title Z-A'}, 
+  { value: 'rating_51', label: 'Rating (desc)'}, 
+  { value: 'rating_15', label: 'Rating (asc)'},   
+]
+
+function sortEntries(entries, sortBy) {
+  return [...entries].sort((a,b) => {
+    // pinned always first
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
+    switch (sortBy) {
+      case 'updated':
+        return new Date(b.updatedAt) - new Date(a.updatedAd)
+      case 'added':
+        return new Date(b.createdAt) - new Date(a.createdAt)
+      case 'completed': {
+        if (!a.completed_at && !b.completed_at) return 0
+        if (!a.completed_at) return 1
+        if (!b.completed_at) return -1
+        return new Date(b.completed_at) - new Date(a.completed_at)        
+      }
+      case 'title_az':
+        return a.title.localeCompare(b.title)
+      case 'title_za':
+        return b.title.localeCompare(a.title)      
+      case 'rating_51':
+        return (b.score ?? 0) - (a.score ?? 0)
+      case 'rating_15':
+        return (a.score ?? 0) - (b.score ?? 0)
+      default:
+        return 0
+    }
+  })
+}
+
 export function TrackerPage({
   activeView, entries, loading, load, debouncedLoad, create, update, remove, togglePin, onLightbox, onToast,
 }) {
@@ -23,6 +62,11 @@ export function TrackerPage({
   const [cardSize, setCardSize] = useState(
     () => Number(localStorage.getItem(CARD_SIZE_KEY)) || CARD_DEFAULT,
   )
+
+  const [sortBy, setSortBy] = useState(
+    () => localStorage.getItem('ilkda-sort') ?? 'updated'
+  )
+
   const [modalEntry, setModalEntry] = useState(undefined)
   const [pendingDeleteId, setPendingDeleteId] = useState(null)
 
@@ -40,6 +84,11 @@ export function TrackerPage({
     localStorage.setItem('ilkda-dm', mode)
   }
 
+  const handleSort = (val) => {
+    setSortBy(val)
+    localStorage.setItem('ilkda-sort', val)
+  }
+ 
   const handleCardSize = (val) => {
     setCardSize(val)
     localStorage.setItem(CARD_SIZE_KEY, val)
@@ -85,12 +134,9 @@ export function TrackerPage({
   // pin filter on the client-side
   const pinnedCount  = entries.filter((e) => e.pinned).length
   const filteredEntries = statusFilter === 'pinned' ? entries.filter((e) => e.pinned) : entries
-  // pinned entries are always added to the top and are reflected immediately without waiting for a server refetch.
-  const displayEntries = [...filteredEntries].sort((a, b) => {
-    if (a.pinned === b.pinned) return 0
-    return a.pinned ? -1 : 1
-  })
-
+  // sort handles pinned-first internally
+  const displayEntries = sortEntries(filteredEntries, sortBy)
+ 
   const pendingEntry = pendingDeleteId ? entries.find((e) => e.id === pendingDeleteId) : null
 
   // all filter tabs - status options + pinned tab
@@ -98,6 +144,16 @@ export function TrackerPage({
     ...STATUS_FILTER_OPTIONS,
     { value: 'pinned', label: `★ Pinned${pinnedCount ? ` (${pinnedCount})` : ''}` },
   ]
+
+  // Source - https://stackoverflow.com/a/33156438
+  // Posted by GolezTrol, modified by community. See post 'Timeline' for change history
+  // Retrieved 2026-04-08, License - CC BY-SA 3.0
+
+  // window.addEventListener('DOMContentLoaded', function() {
+  //   document.getElementById('sortSelect').addEventListener('mouseover', function(event) {
+  //     document.getElementById('sortSelect').classList.add('activated');
+  //   });
+  // });
 
   return (
     <div className={styles.page}>
@@ -124,6 +180,16 @@ export function TrackerPage({
             </button>
           ))}
         </div>
+
+        <select
+          className={styles.sortSelect}
+          value={sortBy}
+          onChange={(e) => handleSort(e.target.value)}
+        >
+          {SORT_OPTIONS.map(({ value, label }) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+        </select>
 
         <button className={styles.addBtn} onClick={() => setModalEntry(null)}>
           + Add Entry

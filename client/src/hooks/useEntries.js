@@ -9,10 +9,10 @@ import { entriesApi, pinApi } from '@/lib/api'
  * pin() / unpin() update both lists optimistically.
  */
 export function useEntries() {
-  const [entries, setEntries]    = useState([])
+  const [entries, setEntries] = useState([])
   const [allEntries, setAllEntries] = useState([])
-  const [loading, setLoading]    = useState(false)
-  const [error, setError]      = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const searchTimer = useRef(null)
 
   const loadAll = useCallback(async () => {
@@ -58,8 +58,8 @@ export function useEntries() {
 
   const update = useCallback(async (id, draft) => {
     const { entry } = await entriesApi.update(id, draft)
-    setEntries((prev) => prev.map((e) => (e.id === id ? entry : e)))
-    setAllEntries((prev) => prev.map((e) => (e.id === id ? entry : e)))
+    setEntries((prev) => [entry, ...prev.filter((e) => e.id !== id)])
+    setAllEntries((prev) => [entry, ...prev.filter((e) => e.id !== id)])
     return entry
   }, [])
 

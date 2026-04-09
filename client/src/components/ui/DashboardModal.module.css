@@ -356,7 +356,7 @@
 
 .histFill {
   width: 100%;
-  background: var(--note);
+  background: var(--accent);
   border-radius: 3px 3px 0 0;
   transition: height 0.5s ease;
   min-height: 0;

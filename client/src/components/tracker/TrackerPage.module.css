@@ -73,7 +73,7 @@
   color: var(--bg);
   border: none;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
   transition: all 0.15s;
@@ -237,4 +237,27 @@
 .filterTabPinned.filterTabActive {
   border-color: var(--accent);
   color: var(--text);
+}
+
+.sortSelect {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: 'Quicksand', sans-serif;
+  padding: 5px 10px;
+  outline: none;
+  cursor: pointer;
+  -webkit-transition: border-color 0.12s, color 0.12s;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.sortSelect:hover {
+  border-color: var(--muted);
+  color: var(--text);
+  /* transition-delay: 0s; */
+}
+.sortSelect option {
+  background: var(--surface);
 }

@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS entries (
   notes  TEXT  NOT NULL DEFAULT '',
   image   TEXT,   -- base64 data URL
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  completed_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -51,27 +52,51 @@ CREATE TRIGGER entries_updated_at
 -- adding desc column (idempotent)
 ALTER TABLE entries ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
 
--- adding year col (idempotent)
+-- year col
 ALTER TABLE entries ADD COLUMN IF NOT EXISTS year SMALLINT DEFAULT NULL;
 
--- adding creator col (idempotent)
+-- creator col 
 -- author (manga, book), studio (tv, anime), etc
 ALTER TABLE entries ADD COLUMN IF NOT EXISTS creator TEXT NOT NULL DEFAULT '';
 
--- adding pinned entries col (idempotent)
+-- pinned entries col 
 ALTER TABLE entries ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- indexing so fetching pinned entries is fast
 CREATE INDEX IF NOT EXISTS idx_entries_pinned ON entries(user_id, pinned) WHERE pinned = TRUE;
 
--- ading isbn and pages col (idempotent)
+-- isbn and pages col
 ALTER TABLE entries ADD COLUMN IF NOT EXISTS isbn  TEXT  DEFAULT NULL;
 ALTER TABLE entries ADD COLUMN IF NOT EXISTS pages SMALLINT DEFAULT NULL;
 
--- adding tracks col (idempotent)
+-- tracks col
 -- stores album track list with checked state: [{id, trackNumber, name, durationMs, checked}]
 ALTER TABLE entries ADD COLUMN IF NOT EXISTS tracks JSONB NOT NULL DEFAULT '[]';
 
--- adding seasons col (idempotent)
+-- seasons col
 -- stores tv szn list: [{number, name, episodeCount, watchedEpisodes, status, score, notes}]
 ALTER TABLE entries ADD COLUMN IF NOT EXISTS seasons JSONB NOT NULL DEFAULT '[]';
+
+-- rewatches col
+-- stores rewatch/reread/replay/relisten log: [{date}]
+-- completed_at holds the first completion date; rewatches holds subsequent ones
+ALTER TABLE entries ADD COLUMN IF NOT EXISTS rewatches JSONB NOT NULL DEFAULT '[]';
+
+-- make completed_at nullable and user-controlled
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'entries' AND column_name = 'completed_at'
+  ) THEN
+    ALTER TABLE entries ADD COLUMN completed_at TIMESTAMPTZ DEFAULT NULL;
+  ELSE
+    -- it exists but may be NOT NULL DEFAULT NOW() — make it nullable
+    ALTER TABLE entries ALTER COLUMN completed_at DROP NOT NULL;
+    ALTER TABLE entries ALTER COLUMN completed_at DROP DEFAULT;
+  END IF;
+END $$;
+ 
+-- index for duplicate title check (case-insensitive per user+type)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_entries_user_type_title
+  ON entries (user_id, type, LOWER(title));

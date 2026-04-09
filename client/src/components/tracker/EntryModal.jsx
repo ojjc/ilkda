@@ -11,6 +11,19 @@ import styles from './EntryModal.module.css'
 
 const SEARCH_TYPES = new Set(['movie', 'tv', 'anime', 'manga', 'book', 'album'])
 const CURRENT_YEAR = new Date().getFullYear()
+// const CURRENT_DATE = new Date().toLocaleDateString()
+
+// more constitent for database layout than ^
+function todayISO() {
+  return new Date().toISOString().split('T')[0]
+}
+
+function rewatchTerm(type) {
+  if (type === 'manga' || type === 'book') return 'Reread'
+  if (type === 'game') return 'Replay' //replay replay replayyy
+  if (type === 'album') return 'Relisten'
+  return 'Rewatch' // anime, tv, movie
+}
 
 function creatorLabel(type) {
   if (type === 'manga' || type === 'book') return 'Author'
@@ -151,6 +164,7 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
   const [progress, setProgress] = useState('')
   const [score, setScore] = useState(0)
   const [year, setYear] = useState('')
+  const [date, setDate] = useState('')
   const [creator, setCreator] = useState('')
   const [isbn, setIsbn] = useState('')
   const [pages, setPages] = useState('')
@@ -158,6 +172,8 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
   const [notes, setNotes] = useState('')
   const [tracks, setTracks] = useState([])
   const [seasons, setSeasons] = useState([])
+  const [completedAt, setCompletedAt] = useState('')
+  const [rewatches, setRewatches] = useState([])
   const [loadingTracks, setLoadingTracks] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error,  setError] = useState('')
@@ -187,6 +203,7 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
       setProgress(entry.progress)
       setScore(entry.score)
       setYear(entry.year != null ? String(entry.year) : '')
+      setDate(entry.date != null ? String(entry.date) : '')
       setCreator(entry.creator || '')
       setIsbn(entry.isbn || '')
       setPages(entry.pages != null ? String(entry.pages) : '')
@@ -194,18 +211,23 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
       setNotes(entry.notes)
       setTracks(Array.isArray(entry.tracks) ? entry.tracks   : [])
       setSeasons(Array.isArray(entry.seasons) ? entry.seasons  : [])
+      setCompletedAt(entry.completed_at ? entry.completed_at.split('T')[0] : '')
+      setRewatches(Array.isArray(entry.rewatches) ? entry.rewatches : [])
       img.setExisting(entry.image)
       if (SEARCH_TYPES.has(entry.type)) search.prefill(entry.title)
       else search.clear()
     } else {
-      setType(''); setTitle(''); setStatus('in-progress'); setProgress(''); setScore(0); setYear(''); setCreator(''); setIsbn(''); setPages('')
-      setDescription(''); setNotes(''); setTracks([]); setSeasons([]); img.reset(); search.clear()
+      setType(''); setTitle(''); setStatus('in-progress'); setProgress(''); setScore(0); setYear(''); setDate(''); setCreator(''); setIsbn(''); setPages('')
+      setDescription(''); setNotes(''); setTracks([]); setSeasons([]); setCompletedAt(''); setRewatches([]); img.reset(); search.clear()
     }
   }, [entry])
 
   // status change: auto-fill progress when set to "Completed"
   const handleStatusChange = (newStatus) => {
     setStatus(newStatus)
+    if (newStatus === 'completed' && !completedAt) {
+      setCompletedAt(todayISO())
+    }
     if (newStatus !== 'completed') return
 
     // albums - check all tracks
@@ -278,7 +300,7 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
     }
   }
 
-  const toggleTrack     = useCallback((id) =>
+  const toggleTrack = useCallback((id) =>
     setTracks(prev => prev.map(t => t.id === id ? { ...t, checked: !t.checked } : t)), [])
   const toggleAllTracks = useCallback(() => {
     const all = tracks.every(t => t.checked)
@@ -294,16 +316,17 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
     if (!finalTitle) { setError('Please enter a title.'); return }
     if (!type) { setError('Please select a media type.'); return }
 
-    const parsedYear  = year.trim()  ? Number(year.trim())  : null
+    const parsedYear = year.trim() ? Number(year.trim()) : null
     const parsedPages = pages.trim() ? Number(pages.trim()) : null
 
     if (parsedYear !== null && (parsedYear < 1800 || parsedYear > CURRENT_YEAR + 5)) {
       setError('Please enter a valid year.'); return
     }
 
-    const finalTracks  = isAlbum ? tracks  : []
+    const finalTracks = isAlbum ? tracks : []
     const finalSeasons = isTV ? seasons : []
-    let finalStatus  = status
+    let finalStatus = status
+    let finalCompletedAt = completedAt || null
 
     // detecting auto-completed actions
     if (isAlbum && totalTracks > 0 && checkedCount === totalTracks) {
@@ -313,6 +336,11 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
     } else if (!isAlbum && !hasSeasons) {
       const m = progress.trim().match(/(\d+)\s*\/\s*(\d+)/)
       if (m && m[1] === m[2] && Number(m[1]) > 0) finalStatus = 'completed'
+    }
+
+    // auto-set completedAt if we just detected completion and it wasn't set
+    if (finalStatus === 'completed' && !finalCompletedAt) {
+      finalCompletedAt = todayISO()
     }
 
     const finalProgress = hasSeasons ? `${watchedSeasonEps} / ${totalSeasonEps} eps` : progress
@@ -325,6 +353,8 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
         isbn: isbn.trim() || null, pages: parsedPages,
         description, notes, image: img.preview,
         tracks: finalTracks, seasons: finalSeasons,
+        completed_at: finalCompletedAt,
+        rewatches,
       })
       onClose()
     } catch (e) {
@@ -541,6 +571,51 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
         </div>            
       )}
 
+      {status === 'completed' && (
+        <div className={styles.completionRow}>
+          <div className={styles.field}>
+            <label className={styles.label}>Completed On</label>
+            <input className={styles.input} type="date"
+              value={completedAt}
+              onChange={(e) => setCompletedAt(e.target.value)} />
+          </div>
+          {type && (
+            <div className={styles.field}>
+              <div className={styles.rewatchHeader}>
+                <label className={styles.label}>
+                  {rewatchTerm(type)} Log
+                  {rewatches.length > 0 && (
+                    <span className={styles.trackCount}>{rewatches.length}×</span>
+                  )}
+                </label>
+                <button type="button" className={styles.toggleAllBtn}
+                  onClick={() => setRewatches(prev => [...prev, { date: todayISO() }])}>
+                  + Add {rewatchTerm(type)}
+                </button>
+              </div>
+              {rewatches.length > 0 && (
+                <div className={styles.rewatchList}>
+                  {rewatches.map((r, i) => (
+                    <div key={i} className={styles.rewatchRow}>
+                      <span className={styles.rewatchIndex}>{i + 1}</span>
+                      <input className={styles.rewatchDate} type="date"
+                        value={r.date}
+                        onChange={(e) => setRewatches(prev =>
+                          prev.map((x, j) => j === i ? { ...x, date: e.target.value } : x)
+                        )} />
+                      <button type="button" className={styles.rewatchRemove}
+                        onClick={() => setRewatches(prev => prev.filter((_, j) => j !== i))}>
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className={styles.field}>
         <label className={styles.label}>Score (0–5)</label>
         <StarRating value={score} onChange={setScore} />
@@ -549,7 +624,7 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
       <div className={styles.field}>
         <label className={styles.label}>Review</label>
           <textarea className={`${styles.input} ${styles.textarea}`}
-          placeholder="Your personal thoughts, notes…" value={notes}
+          placeholder="your personal review :3" value={notes}
           onChange={(e) => setNotes(e.target.value)} />
       </div>
 

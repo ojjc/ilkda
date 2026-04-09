@@ -342,3 +342,64 @@
 }
 .seasonInput:focus { border-color: var(--note); }
 .seasonInput option { background: var(--surface2); }
+
+/* completion date + rewatch log */
+.completionRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.rewatchHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.rewatchList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rewatchRow {
+  display: grid;
+  grid-template-columns: 20px 1fr 24px;
+  align-items: center;
+  gap: 8px;
+}
+
+.rewatchIndex {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.rewatchDate {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'Quicksand', sans-serif;
+  padding: 6px 10px;
+  outline: none;
+  transition: border-color 0.12s;
+  width: 100%;
+}
+.rewatchDate:focus { border-color: var(--muted); }
+
+.rewatchRemove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.12s;
+}
+.rewatchRemove:hover { color: var(--danger); }

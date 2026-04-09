@@ -34,14 +34,21 @@ router.get('/', async (req, res) => {
 // POST /api/entries 
 router.post('/', async (req, res) => {
   try {
-    const { type, title, status, progress, score, notes, description, year, creator, isbn, pages, image, tracks, seasons } = req.body
+    const { type, title, status, progress, score, notes, description, year, creator, isbn, pages, image, tracks, seasons, completed_at, rewatches } = req.body
     if (!title?.trim()) return res.status(400).json({ error: 'Title is required.' })
     if (!VALID_TYPES.includes(type)) return res.status(400).json({ error: 'Invalid media type.' })
 
+    // duplicate check
+    const duplicate = await queryOne(
+      'SELECT id FROM entries WHERE user_id = $1 AND type = $2 AND LOWER(title) = LOWER($3)',
+      [req.user.userId, type, title.trim()]
+    )
+    if (duplicate) return res.status(409).json({ error: `"${title.trim()}" is already in your ${type} list.` })
+
     const entry = await queryOne(
       `INSERT INTO entries
-         (user_id, type, title, status, progress, score, notes, description, year, creator, isbn, pages, image, tracks, seasons)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+         (user_id, type, title, status, progress, score, notes, description, year, creator, isbn, pages, image, tracks, seasons, completed_at, rewatches)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
        RETURNING *`,
       [
         req.user.userId, type, title.trim(),
@@ -57,6 +64,8 @@ router.post('/', async (req, res) => {
         image || null,
         JSON.stringify(Array.isArray(tracks) ? tracks : []),
         JSON.stringify(Array.isArray(seasons) ? seasons : []),
+        completed_at || null,
+        JSON.stringify(Array.isArray(rewatches) ? rewatches : []),
       ]
     )
     res.status(201).json({ entry: toClient(entry) })
@@ -75,7 +84,7 @@ router.patch('/:id', async (req, res) => {
     )
     if (!existing) return res.status(404).json({ error: 'Entry not found.' })
 
-    const { type, title, status, progress, score, notes, description, year, creator, isbn, pages, image, tracks, seasons } = req.body
+    const { type, title, status, progress, score, notes, description, year, creator, isbn, pages, image, tracks, seasons, completed_at, rewatches } = req.body
 
     const entry = await queryOne(
       `UPDATE entries
@@ -92,8 +101,10 @@ router.patch('/:id', async (req, res) => {
            pages = $11,
            image = $12,
            tracks = $13,
-           seasons = $14
-       WHERE id = $15 AND user_id = $16
+           seasons = $14,
+           completed_at = $15,
+           rewatches = $16
+       WHERE id = $17 AND user_id = $18
        RETURNING *`,
       [
         VALID_TYPES.includes(type) ? type : existing.type,
@@ -110,6 +121,8 @@ router.patch('/:id', async (req, res) => {
         image !== undefined ? image : existing.image,
         tracks !== undefined ? JSON.stringify(Array.isArray(tracks) ? tracks  : []) : existing.tracks,
         seasons !== undefined ? JSON.stringify(Array.isArray(seasons) ? seasons : []) : existing.seasons,
+        completed_at !== undefined ? (completed_at || null) : existing.completed_at,
+        rewatches !== undefined ? JSON.stringify(Array.isArray(rewatches) ? rewatches : []) : existing.rewatches,
         req.params.id, req.user.userId,
       ]
     )
@@ -187,6 +200,8 @@ function toClient(e) {
     image: e.image || null,
     tracks: Array.isArray(e.tracks)  ? e.tracks  : (e.tracks  ? JSON.parse(e.tracks) : []),
     seasons: Array.isArray(e.seasons) ? e.seasons : (e.seasons ? JSON.parse(e.seasons) : []),
+    completed_at: e.completed_at ?? null,
+    rewatches: Array.isArray(e.rewatches) ? e.rewatches : (e.rewatches ? JSON.parse(e.rewatches) : []),
     createdAt: e.created_at,
     updatedAt: e.updated_at,
   }
