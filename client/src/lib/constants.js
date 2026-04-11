@@ -6,7 +6,7 @@ export const TYPE_META = {
   album: { label: 'Album', color: 'var(--album)', emoji: '🎵' },
   tv: { label: 'TV', color: 'var(--tv)', emoji: '📺' },
   book: { label: 'Book', color: 'var(--book)', emoji: '📚' },
-  game: { label: 'Game', color: 'var(--game)', emoji: '🎮' },
+  // game: { label: 'Game', color: 'var(--game)', emoji: '🎮' },
 }
 
 /** @type {Record<string, { label: string, color: string }>} */
@@ -29,7 +29,7 @@ export const PAGE_TITLES = {
   movie: 'Movies',
   manga: 'Manga',
   book: 'Books',
-  game: 'Games',
+  // game: 'Games',
   album: 'Albums',
 }
 

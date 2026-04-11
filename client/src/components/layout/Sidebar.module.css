@@ -150,7 +150,7 @@
   border-radius: 10px;
   gap: 8px;
   padding: 8px;
-  transition: border-color 0.12s, background 0.12s;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .statsGrid:hover{
@@ -177,7 +177,7 @@
   align-items: center;
   gap: 2px;
   width: 100%;
-  transition: border-color 0.12s, background 0.12s;
+  transition: border-color 0.2s, background 0.2s;
 }
 /* .statCell:hover {
   border-color: var(--accent);
@@ -198,7 +198,7 @@
   font-size: 20px;
   color: var(--muted);
   line-height: 1;
-  transition: border-color 0.12s, background 0.12s;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .statLabel {
@@ -219,3 +219,119 @@
   transition: all 0.12s;
 }
 .signOutBtn:hover { color: var(--danger); border-color: var(--danger); }
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 160px;
+    min-width: 160px;
+  }
+  .navLabel { 
+    letter-spacing: 1.5px; 
+    font-size: 10px; 
+  }
+  .navItem { 
+    padding: 7px 12px; 
+    font-size: 12px; 
+  }
+  .statNum { 
+    font-size: 16px; 
+  }
+}
+ 
+@media (max-width: 600px) {
+  .sidebar {
+    width: 48px;
+    min-width: 48px;
+  }
+  .userInfo, .navLabel, .navLabel2, .navCount, .bottom, .statsHeader, .statsGrid, .signOutBtn { 
+    display: none; 
+  }
+  .userWidget { 
+    justify-content: center; 
+    padding: 14px 0; 
+  }
+  .navItem { 
+    justify-content: center; 
+    padding: 10px 0; 
+  }
+  .navDot { 
+    width: 9px; 
+    height: 9px; 
+  }
+}
+ 
+/* autohiding */
+.sidebarAutohide {
+  transition: width 0.4s ease, min-width 0.4s ease;
+}
+ 
+.sidebarCollapsed {
+  width: 48px !important;
+  min-width: 48px !important;
+  overflow: hidden;
+}
+ 
+.sidebarCollapsed .userInfo, .sidebarCollapsed .navLabel, .sidebarCollapsed .navLabel2,
+.sidebarCollapsed .navCount, .sidebarCollapsed .bottom {
+  display: none;
+}
+ 
+.sidebarCollapsed .userWidget {
+  justify-content: center;
+  padding: 14px 0;
+}
+ 
+.sidebarCollapsed .navItem {
+  justify-content: center;
+  padding: 10px 0;
+}
+ 
+.sidebarCollapsed .navDot {
+  width: 9px;
+  height: 9px;
+}
+ 
+/* bottom row now with sign out + toggle */
+.bottomBtns {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 10px;
+}
+ 
+.bottomBtns .signOutBtn {
+  flex: 1;
+  margin-top: 0;
+}
+ 
+/* autohide toggle button */
+.autohideBtn {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s;
+  padding: 0;
+}
+.autohideBtn:hover { 
+  color: var(--text); 
+  border-color: var(--muted); 
+}
+.autohideBtnActive {
+  color: var(--note);
+  border-color: var(--note);
+  background: rgba(137, 207, 240, 0.08);
+}
+.autohideBtnActive:hover {
+  background: rgba(137, 207, 240, 0.15);
+}
+ 
+.sidebarCollapsed .autohideBtn { display: none; }
+ 

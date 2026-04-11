@@ -1,6 +1,22 @@
 .header {
   display: grid;
-  grid-template-columns: 36px 1.75fr .33fr .25fr 1fr 100px 1.75fr 72px;
+  grid-template-columns: 
+                          /* type */
+                          36px
+                          /* title */
+                          1.75fr    
+                          /* status */
+                          .33fr   
+                          /* year */ 
+                          .33fr   
+                          /* progress */
+                          1fr         
+                          /* score */
+                          .33fr    
+                          /* review */
+                          1.75fr    
+                          /* buttons */
+                          72px;
   gap: 12px;
   padding: 6px 16px;
   font-size: 14px;
@@ -17,7 +33,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 36px 1.75fr .33fr .25fr 1fr 100px 1.75fr 72px;
+  grid-template-columns: 36px 1.75fr .33fr .33fr 1fr .33fr 1.75fr 72px;
   gap: 12px;
   align-items: center;
   padding: 10px 16px;
@@ -90,6 +106,7 @@
   gap: 5px;
   font-size: 14px;
   color: var(--muted);
+  white-space: nowrap
 }
 
 .statusDot {
@@ -126,7 +143,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding-right: 5px;
+  padding-right: 15px;
 }
 .trackBar {
   flex: 1;
@@ -262,3 +279,30 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@media (max-width: 900px) {
+  .header, .row {
+    grid-template-columns: 36px 1.75fr .4fr 1fr 80px 72px;
+  }
+  .header > *:nth-child(4), .header > *:nth-child(7), .row > *:nth-child(4), .row > *:nth-child(7) {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .header, .row {
+    grid-template-columns: 30px 1fr .4fr 56px;
+  }
+  .header > *:nth-child(4), .header > *:nth-child(5), .header > *:nth-child(6), .header > *:nth-child(7),
+  .row > *:nth-child(4), .row > *:nth-child(5), .row > *:nth-child(6), .row > *:nth-child(7) {
+    display: none;
+  }
+  .titleText {
+    font-size: 13px;
+  }
+  .statusBadge {
+    font-size: 12px;
+  }
+  .typePill {
+    display: none;
+  }
+}

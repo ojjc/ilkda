@@ -6,6 +6,21 @@ import styles from './Sidebar.module.css'
 export function Sidebar({ user, entries, activeView, onViewChange, onProfileClick, onSignOut }) {
   const [dashOpen, setDashOpen] = useState(false)
 
+  const [autohide, setAutoHide] = useState(
+    () => localStorage.getItem('ilkda-sidebar-autohide') === 'true'
+  )
+
+  const [hovered, setHovered] = useState(false)
+
+  const toggleAutoHide = () => {
+    setAutoHide((prev) => {
+      localStorage.setItem('ilkda-sidebar-autohide', String(!prev))
+      return !prev
+    })
+  }
+
+  const collapsed = autohide && !hovered
+
   const countFor = (type) => type === 'all' ? entries.length : entries.filter((e) => e.type === type).length
 
   const scopedEntries = activeView === 'all' ? entries : entries.filter((e) => e.type === activeView)
@@ -18,8 +33,18 @@ export function Sidebar({ user, entries, activeView, onViewChange, onProfileClic
 
   const scopeLabel = activeView === 'all' ? null : TYPE_META[activeView]?.label ?? activeView
 
+  const sidebarClass = [
+    styles.sidebar,
+    autohide ? styles.sidebarAutoHide : '',
+    collapsed ? styles.sidebarCollapsed : '',
+  ].filter(Boolean).join(' ')
+
   return (
-    <aside className={styles.sidebar}>
+    <aside 
+      className={sidebarClass}
+      onMouseEnter={() => autohide && setHovered(true)}
+      onMouseLeave={() => autohide && setHovered(false)}
+    >
       {/* user widget */}
       <button className={styles.userWidget} onClick={onProfileClick}>
         <div className={styles.avatar}>
@@ -74,9 +99,17 @@ export function Sidebar({ user, entries, activeView, onViewChange, onProfileClic
           <StatCell value={typeCount} label="categories" />
         </div>
 
-        <button className={styles.signOutBtn} onClick={onSignOut}>
-          Sign out
-        </button>
+        <div className={styles.bottomBtns}>
+          <button className={styles.signOutBtn} onClick={onSignOut}>Sign Out</button>
+          <button 
+            className={`${styles.autohideBtn} ${autohide ? styles.autohideBtnActive: ''}`}
+            onClick={toggleAutoHide}
+            title={autohide ? 'Disable Autohide' : 'Enable Autohide'}
+          >
+            {autohide ? '<' : '>'}
+          </button>
+        </div>
+
       </div>
 
       {/* dashboard model */}

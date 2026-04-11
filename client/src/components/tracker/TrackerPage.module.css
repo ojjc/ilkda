@@ -23,6 +23,7 @@
   color: var(--text);
   font-weight: normal;
   flex: 1;
+  white-space: nowrap;
 }
 
 .searchBar {
@@ -48,8 +49,20 @@
 }
 .searchInput::placeholder { color: var(--muted); }
 
+.ascWrapper {
+  display: flex;
+  gap: 6px;
+  justify-items: space-between;
+  flex-wrap: wrap;
+}
+
 /* filter tabs */
-.filterTabs { display: flex; gap: 4px; }
+.filterTabs { 
+  display: flex; 
+  gap: 4px; 
+  /* align-self: flex-start; */
+  flex-wrap: wrap;
+}
 
 .filterTab {
   padding: 5px 10px;
@@ -57,6 +70,9 @@
   border: 1px solid var(--border);
   background: none;
   color: var(--muted);
+  align-self: flex-start;
+  height: auto;
+  line-height: 1;
   font-size: 13px;
   transition: all 0.15s;
 }
@@ -249,8 +265,8 @@
   padding: 5px 10px;
   outline: none;
   cursor: pointer;
-  -webkit-transition: border-color 0.12s, color 0.12s;
-  transition: border-color 0.12s, color 0.12s;
+  -webkit-transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.2s, color 0.2s;
 }
 
 .sortSelect:hover {
@@ -261,3 +277,91 @@
 .sortSelect option {
   background: var(--surface);
 }
+
+/* loadmore */
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 24px;
+}
+
+.loadMoreBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 24px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: 'Quicksand', sans-serif;
+  transition: all 0.2s;
+}
+.loadMoreBtn:hover {
+  border-color: var(--muted);
+  color: var(--text);
+  background: var(--surface);
+}
+
+.loadMoreCount {
+  font-size: 11px;
+  color: var(--note);
+}
+
+@media ( max-width: 900px ) {
+  .topbar {
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    gap: 8px;
+  }
+  .pageTitle {
+    flex-basis: 100%;
+    font-size: 17px;
+  }
+  .searchBar {
+    flex: 1;
+    width: auto;
+    min-width: 120px;
+  }
+  .filterTabs {
+    flex-wrap: wrap;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.75fr;
+  }
+  .content {
+    padding: 16px;
+  }
+}
+
+@media ( max-width: 600px ) {
+  .topbar {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  .pageTitle {
+    font-size: 15px;
+  }
+  .filterTabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.75fr;
+  }
+  .filterTab {
+    font-size: 11px;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+  .sortSelect {
+    font-size: 11px;
+  }
+  .addBtn {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+  .sizeSliderWrap {
+    display: none;
+  }
+  .content {
+    padding: 10px;
+  }
+}
+ 

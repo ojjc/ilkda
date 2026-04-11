@@ -11,6 +11,7 @@ const CARD_MIN = 120
 const CARD_MAX = 300
 const CARD_DEFAULT = 160
 const PIN_LIMIT = 5
+const PAGE_SIZE = 85
 
 const SORT_OPTIONS = [
   { value: 'updated', label: 'Updated'}, 
@@ -67,12 +68,16 @@ export function TrackerPage({
     () => localStorage.getItem('ilkda-sort') ?? 'updated'
   )
 
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [modalEntry, setModalEntry] = useState(undefined)
   const [pendingDeleteId, setPendingDeleteId] = useState(null)
 
   useEffect(() => {
-    load({ type: activeView, status: statusFilter })
+    load({ type: activeView, status: statusFilter})
+    setVisibleCount(PAGE_SIZE)
   }, [activeView, statusFilter, load])
+
+  useEffect(() => { setVisibleCount(PAGE_SIZE)} , [sortBy])
 
   const handleSearch = useCallback((q) => {
     setSearchQuery(q)
@@ -135,7 +140,9 @@ export function TrackerPage({
   const pinnedCount  = entries.filter((e) => e.pinned).length
   const filteredEntries = statusFilter === 'pinned' ? entries.filter((e) => e.pinned) : entries
   // sort handles pinned-first internally
-  const displayEntries = sortEntries(filteredEntries, sortBy)
+  const sortedEntries = sortEntries(filteredEntries, sortBy)
+  const displayEntries = sortedEntries.slice(0, visibleCount)
+  const hasMore = visibleCount < sortedEntries.length
  
   const pendingEntry = pendingDeleteId ? entries.find((e) => e.id === pendingDeleteId) : null
 
@@ -180,59 +187,62 @@ export function TrackerPage({
             </button>
           ))}
         </div>
+        <div className={styles.ascWrapper}>
+          <select
+            className={styles.sortSelect}
+            value={sortBy}
+            onChange={(e) => handleSort(e.target.value)}
+          >
+            {SORT_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
 
-        <select
-          className={styles.sortSelect}
-          value={sortBy}
-          onChange={(e) => handleSort(e.target.value)}
-        >
-          {SORT_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
+          <button className={styles.addBtn} onClick={() => setModalEntry(null)}>
+            + Add Entry
+          </button>
 
-        <button className={styles.addBtn} onClick={() => setModalEntry(null)}>
-          + Add Entry
-        </button>
+          {displayMode === 'grid' && (
+            <div className={styles.sizeSliderWrap} title="Card size">
+              <svg className={styles.sizeIcon} width="11" height="11" viewBox="0 0 11 11" fill="none">
+                <rect x="0" y="0" width="4" height="4" rx="0.8" fill="currentColor" opacity="0.5"/>
+                <rect x="5.5" y="0" width="5.5" height="5.5" rx="0.8" fill="currentColor"/>
+              </svg>
+              <input
+                type="range" className={styles.sizeSlider}
+                min={CARD_MIN} max={CARD_MAX} value={cardSize}
+                onChange={(e) => handleCardSize(Number(e.target.value))}
+              />
+            </div>
+          )}
 
-        {displayMode === 'grid' && (
-          <div className={styles.sizeSliderWrap} title="Card size">
-            <svg className={styles.sizeIcon} width="11" height="11" viewBox="0 0 11 11" fill="none">
-              <rect x="0" y="0" width="4" height="4" rx="0.8" fill="currentColor" opacity="0.5"/>
-              <rect x="5.5" y="0" width="5.5" height="5.5" rx="0.8" fill="currentColor"/>
-            </svg>
-            <input
-              type="range" className={styles.sizeSlider}
-              min={CARD_MIN} max={CARD_MAX} value={cardSize}
-              onChange={(e) => handleCardSize(Number(e.target.value))}
-            />
+          <div className={styles.viewToggle}>
+            <button
+              className={`${styles.viewBtn} ${displayMode === 'list' ? styles.viewBtnActive : ''}`}
+              onClick={() => handleDisplayMode('list')} title="List view"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="0" y="1"  width="14" height="2" rx="1" fill="currentColor" />
+                <rect x="0" y="6"  width="14" height="2" rx="1" fill="currentColor" />
+                <rect x="0" y="11" width="14" height="2" rx="1" fill="currentColor" />
+              </svg>
+            </button>
+            <button
+              className={`${styles.viewBtn} ${displayMode === 'grid' ? styles.viewBtnActive : ''}`}
+              onClick={() => handleDisplayMode('grid')} title="Grid view"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="0" y="0" width="6" height="6" rx="1.5" fill="currentColor" />
+                <rect x="8" y="0" width="6" height="6" rx="1.5" fill="currentColor" />
+                <rect x="0" y="8" width="6" height="6" rx="1.5" fill="currentColor" />
+                <rect x="8" y="8" width="6" height="6" rx="1.5" fill="currentColor" />
+              </svg>
+            </button>
           </div>
-        )}
-
-        <div className={styles.viewToggle}>
-          <button
-            className={`${styles.viewBtn} ${displayMode === 'list' ? styles.viewBtnActive : ''}`}
-            onClick={() => handleDisplayMode('list')} title="List view"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <rect x="0" y="1"  width="14" height="2" rx="1" fill="currentColor" />
-              <rect x="0" y="6"  width="14" height="2" rx="1" fill="currentColor" />
-              <rect x="0" y="11" width="14" height="2" rx="1" fill="currentColor" />
-            </svg>
-          </button>
-          <button
-            className={`${styles.viewBtn} ${displayMode === 'grid' ? styles.viewBtnActive : ''}`}
-            onClick={() => handleDisplayMode('grid')} title="Grid view"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <rect x="0" y="0" width="6" height="6" rx="1.5" fill="currentColor" />
-              <rect x="8" y="0" width="6" height="6" rx="1.5" fill="currentColor" />
-              <rect x="0" y="8" width="6" height="6" rx="1.5" fill="currentColor" />
-              <rect x="8" y="8" width="6" height="6" rx="1.5" fill="currentColor" />
-            </svg>
-          </button>
         </div>
-      </div>
+        </div>
+
+
 
       {/* content */}
       <div className={styles.contentWrap}>
@@ -276,7 +286,20 @@ export function TrackerPage({
               pinLimit={PIN_LIMIT}
               cardSize={cardSize}
             />
-          )}          
+          )}
+
+          {!loading && hasMore && (
+            <div className={styles.loadMoreWrap}>
+              <button className={styles.loadMoreBtn}
+                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
+                Load more
+                <span className={styles.loadMoreCount}>
+                  {sortedEntries.length - visibleCount} remaining
+                </span>
+              </button>
+            </div>
+          )}
+       
         </div>
 
       </div>
