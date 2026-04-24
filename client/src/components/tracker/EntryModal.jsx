@@ -319,7 +319,7 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
     const parsedYear = year.trim() ? Number(year.trim()) : null
     const parsedPages = pages.trim() ? Number(pages.trim()) : null
 
-    if (parsedYear !== null && (parsedYear < 1800 || parsedYear > CURRENT_YEAR + 5)) {
+    if (parsedYear !== null && (parsedYear < 1000 || parsedYear > CURRENT_YEAR + 5)) {
       setError('Please enter a valid year.'); return
     }
 
