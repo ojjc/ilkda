@@ -368,14 +368,14 @@ export function EntryModal({ entry, onSave, onClose, onLightbox }) {
 
   return (
     <Modal
-      title={entry ? 'Edit Entry' : 'New Entry'}
+      title={entry ? 'editing entry' : 'new entry'}
       onClose={onClose}
       panelClassName={styles.panel}
       footer={
         <>
           <button className={styles.btnSecondary} onClick={onClose} type="button">Cancel</button>
           <button className={styles.btnPrimary} onClick={handleSave} disabled={saving} type="button">
-            {saving ? 'Saving…' : 'Save Entry'}
+            {saving ? 'saving...' : 'save entry'}
           </button>
         </>
       }

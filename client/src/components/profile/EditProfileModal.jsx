@@ -41,7 +41,7 @@ export function EditProfileModal({ user, onSave, onClose }) {
 
   return (
     <Modal
-      title="Edit Profile"
+      title="editing profile"
       onClose={onClose}
       footer={
         <>

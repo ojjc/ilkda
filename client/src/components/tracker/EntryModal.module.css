@@ -4,6 +4,14 @@
   /* height: min(1200px, 96vw) !important; */
 }
 
+/* we tried */
+/* .mainBox {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1dvh;
+  background: var(--surface3);
+} */
+
 /* two column body as opposed to one before */
 .twoCol {
   display: grid;
@@ -30,6 +38,7 @@
   flex-direction: column;
   gap: 6px;
   height: 100%;
+  /* padding-top: 10px; */
 }
 
 .label {

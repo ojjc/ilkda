@@ -6,7 +6,7 @@
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 3px 10px 10px 10px;
   overflow: hidden;
   cursor: pointer;
   position: relative;
@@ -17,8 +17,8 @@
 }
 .card:hover {
   border-color: var(--muted);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(212, 169, 106, 0.1) inset;
 }
 
 .cover {
@@ -213,7 +213,7 @@
   z-index: 9999;
   background: rgba(30, 30, 30, 0.85);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 3px 10px 10px 10px;
   padding: 10px 12px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset;
   backdrop-filter: blur(2px);

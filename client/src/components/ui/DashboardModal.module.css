@@ -338,7 +338,7 @@
 
 .histCount {
   font-size: 11px;
-  color: var(--text2);
+  color: var(--muted);
   height: 14px;
   line-height: 14px;
   font-variant-numeric: tabular-nums;
@@ -364,7 +364,7 @@
 
 .histLabel {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 

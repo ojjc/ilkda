@@ -32,6 +32,7 @@
   --book:    #e8d47c;
   --movie:   #c8e87c;
   /* --podcast: #e87c7c; */
+  --surface3:  #111111;
 }
 
 html, body, #root {
